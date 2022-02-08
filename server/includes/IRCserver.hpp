@@ -4,14 +4,13 @@
 #include "IRCserverInterface.hpp"
 #include "User.hpp"
 class Message;
-//class User;
 class Channel;
 #define _DELIM "\r\n"
 #define _HOSTNAME_LEN 64
 
 
 class IRCserver: public IRCserverInterface {
-    typedef std::unordered_multimap<std::string, *User> users;      // TODO: check if it works
+    typedef std::unordered_multimap<std::string, User> users;      // TODO: check if it works
     using userOperators =  std::map<std::string, User*>;
     using channels = std::map<std::string, Channel>;
 public:
@@ -51,7 +50,7 @@ private:
     void    _sendToChannel( const std::string &channel,
                             const std::string &buf,
                             const std::string &nick = "" );
-    std::multimap<std::string, User>::iterator    _getUser( int sockfd );
+    std::unordered_multimap<std::string, User>::iterator   _getUser( int sockfd );
     void    _execute( int sockfd, const std::string &buf );
 
 
@@ -84,7 +83,7 @@ public:
     int32_t getMaxFd() const;
     int32_t getListener() const;
     const std::string&    getHostname() const override;
-    sockaddr_in & getServerAdress() const override;
+    sockaddr_in getServerAdress() const override;
     const fd_set &getClientFds() const;
     const std::string &getBuffer() const;
     const userOperators &getOperators() const;

@@ -70,7 +70,7 @@ void IRCserver::setHostname() {
         _hostname = hostname;
 }
 
-sockaddr_in & IRCserver::getServerAdress() const {
+sockaddr_in  IRCserver::getServerAdress() const {
     return _serverAdress;
 }
 
@@ -127,24 +127,24 @@ void IRCserver::_accept()
 void IRCserver::_addUser(int socket) {
         User created;
         created.setSocket(socket);
-        std::pair<std::string, User> tmp(std::string(""), created);
-        _users.insert(tmp);
+        _users.insert({"default", created});
 }
 
 void IRCserver::_addUser(const User &user)
 {
     std::pair<std::string, User> tmp(user.getNickname(), user);
-    _users.insert(tmp);
+    _users.insert({user.getNickname(), user});
 }
 
 void IRCserver::start()
 {
-    std::unordered_multimap<std::string, User>::iterator uit;
-
+//    std::unordered_multimap<std::string, User>::iterator uit;
+    User tmp;
+    std::unordered_multimap<std::string, User>::iterator usriter;
     fd_set select_fds;
     select_fds = _client_fds;
 
-    std::cout << GREEN << "Server is started..." << RESET << std::endl; // TODO: change message
+    std::cout << GREEN << "Server started..." << RESET << std::endl; // TODO: change message
     while (select(_max_fd + 1, &select_fds, nullptr, nullptr, nullptr) != -1)
     {
         if (exitFlag)
@@ -154,19 +154,17 @@ void IRCserver::start()
             if (!FD_ISSET(i, &select_fds) || i == _listener)
                 continue;
             std::string buf;
-            uit = _getUser(i);
-            User *user = &(uit->second);
-
-            if (!user->getSendBuffer().empty())
-                _send(i, user->getSendBuffer());
-
+            usriter = _getUser(i);
+            if (usriter == _users.end())    {
+                continue;
+            }
+            if (usriter->second.getSendBuffer().length())
+                _send(i, usriter->second.getSendBuffer());
             try
             {
                 _recv(i, buf);
-            }
-            catch (const std::exception &e)
-            {
-                _QUIT(Message(std::string("QUIT :Remote host closed the connection"), *user), &user);
+            } catch (const std::exception &e)   {
+                _QUIT(Message(std::string("QUIT :Remote host closed the connection"), *user), &user);   // TODO: change me
             }
             _execute(i, buf);
 
@@ -200,6 +198,46 @@ void    IRCserver::_stop()
         _QUIT(Message("", it->second), &user);
     }
     FD_ZERO(&_client_fds);
+}
+
+std::unordered_multimap<std::string, User>::iterator IRCserver::_getUser(int sockfd) {
+
+    for (std::unordered_multimap<std::string, User>::iterator it = _users.begin(); it != _users.end(); ++it)  {
+        if (it->second.getSocket() == sockfd)
+            return it;
+    }
+    return _users.end();
+}
+
+void IRCserver::_QUIT(const Message &msg, User **user) {
+    std::string buf;
+    std::map<std::string, Channel>::iterator cit;
+    std::map<std::string, User *>::const_iterator uit;
+
+//    if ((msg.getCommand()) != "QUIT") // TODO: change me
+//        return;
+    if (msg.getParamets().empty())
+        buf = ":" + (*user)->getNickname() + " QUIT :Quit: " + (*user)->getNickname();
+    else
+        buf = ":" + (*user)->getNickname() + " QUIT :Quit: " + msg.getParamets()[0];
+
+    for (cit = _channels.begin(); cit != _channels.end(); ++cit)
+    {
+        uit = cit->second.getUsers().find((*user)->getNickname());
+        if (uit != cit->second.getUsers().end())
+            _sendToChannel(cit->second.getName(), buf, (*user)->getNickname());
+    }
+    buf = "ERROR :Closing Link";
+    _send((*user)->getSocket(), buf);
+
+    // removing the user
+    close((*user)->getSocket());
+    FD_CLR((*user)->getSocket(), &this->_client_fds);
+
+    _removeUser((*user)->getNickname());
+
+    *user = NULL;
+
 }
 
 
