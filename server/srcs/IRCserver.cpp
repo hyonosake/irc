@@ -189,7 +189,6 @@ void IRCserver::start()
 }
 
 
-
 void    IRCserver::_stop()
 {
     std::unordered_multimap<std::string, User>::iterator    it;
