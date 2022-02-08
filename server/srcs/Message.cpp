@@ -2,62 +2,62 @@
 
 Message::Message() {}
 
-Message::Message(const Message &rhs) : _prefix(rhs._prefix),
-                                       _parameters(rhs._parameters),
-                                       _command(rhs._command),
-                                       _isPrefix(rhs._isPrefix),
-                                       _isCommand(rhs._isCommand)
+Message::Message(const Message &rhs) : messagePrefix(rhs.messagePrefix),
+                                       messageParameters(rhs.messageParameters),
+                                       command(rhs.command),
+                                       isMessagePrefix(rhs.isMessagePrefix),
+                                       isCommand(rhs.isCommand)
 {
 }
 
 Message::~Message() {}
 
 Message::Message(std::string str, const User &usr)
-    : _isPrefix(false), _isCommand(false)
+    : isMessagePrefix(false), isCommand(false)
 {
-    this->_parse(str, usr);
+    parseMessage(str, usr);
 }
 
 void Message::setCommand(const std::string &command)
 {
-    _command = command;
+    command = command;
 }
 
-const std::string &Message::getCommand() const { return this->_command; }
+const std::string &Message::getCommand() const { return command; }
 
-const std::vector<std::string> &Message::getParamets() const { return this->_parameters; }
+const std::vector<std::string> &Message::getParamets() const { return messageParameters; }
 
-const std::string &Message::getPrefix() const { return this->_prefix; }
+const std::string &Message::getPrefix() const { return messagePrefix; }
 
-void Message::_parse(std::string str, const User &usr)
+void Message::parseMessage(std::string str, const User &usr)
 {
     std::vector<std::string> vec_sep_space;
     std::vector<std::string> vec_sep_colon;
 
-    this->_prefix = usr.getNickname();
+    messagePrefix = usr.getNickname();
 
     if (str[0] == ':')
-        this->_isPrefix = true;
+        isMessagePrefix = true;
 
-    if (_checkColon(str))
+    if (isColonSeparated(str))
     {
-        std::string buf_str;
+        std::string buffer_str;
 
-        vec_sep_colon = _split(str, ':');
+        vec_sep_colon = splitMessage(str, ':');
         for (size_t i = 1; i < vec_sep_colon.size(); ++i)
-            buf_str += vec_sep_colon[i];
-        vec_sep_space = _split(vec_sep_colon[0], ' ');
-        _parseUtility(vec_sep_space);
-        this->_parameters.push_back(buf_str);
+            buffer_str += vec_sep_colon[i];
+        vec_sep_space = splitMessage(vec_sep_colon[0], ' ');
+        parseMessageUtility(vec_sep_space);
+        messageParameters.push_back(buffer_str);
     }
     else
     {
-        vec_sep_space = _split(str, ' ');
-        _parseUtility(vec_sep_space);
+        vec_sep_space = splitMessage(str, ' ');
+        parseMessageUtility(vec_sep_space);
     }
 }
 
-std::vector<std::string> Message::_split(const std::string &str, char delimeter)
+std::vector<std::string> Message::splitMessage(const std::string &str, char delimeter)
 {
     std::vector<std::string> result;
     std::istringstream sstream(str);
@@ -71,7 +71,7 @@ std::vector<std::string> Message::_split(const std::string &str, char delimeter)
     return result;
 }
 
-bool Message::_checkColon(const std::string &str)
+bool Message::isColonSeparated(const std::string &str)
 {
     for (size_t i = 0; i != str.size(); ++i)
     {
@@ -81,7 +81,7 @@ bool Message::_checkColon(const std::string &str)
     return false;
 }
 
-bool Message::_checkComma(const std::string &str)
+bool Message::isCommaSeparated(const std::string &str)
 {
     for (size_t i = 0; i != str.size(); ++i)
     {
@@ -91,7 +91,7 @@ bool Message::_checkComma(const std::string &str)
     return false;
 }
 
-void Message::_parseUtility(std::vector<std::string> vec_sep_space)
+void Message::parseMessageUtility(std::vector<std::string> vec_sep_space)
 {
     std::vector<std::string> vec_sep_comma;
 
@@ -99,25 +99,25 @@ void Message::_parseUtility(std::vector<std::string> vec_sep_space)
     {
         for (size_t i = 0; i != vec_sep_space.size(); ++i)
         {
-            if (_isPrefix && i == 0)
+            if (isMessagePrefix && i == 0)
             {
-                this->_prefix = vec_sep_space[i];
+                messagePrefix = vec_sep_space[i];
             }
-            else if (!_isCommand)
+            else if (!isCommand)
             {
-                this->_command = vec_sep_space[i];
-                _isCommand = true;
+                command = vec_sep_space[i];
+                isCommand = true;
             }
             else
             {
-                if (_checkComma(vec_sep_space[i]))
+                if (isCommaSeparated(vec_sep_space[i]))
                 {
-                    vec_sep_comma = _split(vec_sep_space[i], ',');
+                    vec_sep_comma = splitMessage(vec_sep_space[i], ',');
                     for (size_t j = 0; j < vec_sep_comma.size(); ++j)
-                        this->_parameters.push_back(vec_sep_comma[j]);
+                        messageParameters.push_back(vec_sep_comma[j]);
                 }
                 else
-                    this->_parameters.push_back(vec_sep_space[i]);
+                    messageParameters.push_back(vec_sep_space[i]);
             }
         }
     }
@@ -128,14 +128,14 @@ void Message::_printTest()
     std::cout << std::endl;
 
     std::cout << "PREFIX: " << std::endl
-              << this->_prefix << std::endl;
+              << messagePrefix << std::endl;
 
     std::cout << "CMD: " << std::endl
-              << this->_command << std::endl;
+              << command << std::endl;
 
     std::cout << "PARAMETERS: " << std::endl;
-    for (size_t i = 0; i < _parameters.size(); ++i)
+    for (size_t i = 0; i < messageParameters.size(); ++i)
     {
-        std::cout << _parameters[i] << std::endl;
+        std::cout << messageParameters[i] << std::endl;
     }
 }

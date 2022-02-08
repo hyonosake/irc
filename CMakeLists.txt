@@ -13,4 +13,4 @@ add_executable(irc
         server/srcs/User.cpp
         server/includes/User.hpp
         server/includes/Message.hpp
-        server/srcs/Message.cpp server/srcs/Channel.cpp server/includes/Channel.hpp server/includes/utils.hpp server/srcs/utils.cpp)
+        server/srcs/Message.cpp server/srcs/Channel.cpp server/includes/Channel.hpp)

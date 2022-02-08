@@ -1,120 +1,124 @@
 #include "User.hpp"
 
 User::User():
-        _socket(-1),
-        _user(false),
-        _password(false),
-        _nick(false),
-        _logged(false)  {};
+        socket(-1),
+        activeUser(false),
+        usePassword(false),
+        useNick(false),
+        loggedNow(false)  {};
 
 User::User(const User &rhs):
-        _username(rhs._username),
-        _realName(rhs._realName),
-        _nickname(rhs._nickname),
-        _serverName(rhs._serverName),
-        _password(rhs._password),
-        _nick(rhs._nick),
-        _user(rhs._user),
-        _logged(rhs._logged),
-        _socket(rhs._socket)    {};
+        userName(rhs.userName),
+        actualName(rhs.actualName),
+        userNickname(rhs.userNickname),
+        serverName(rhs.serverName),
+        usePassword(rhs.usePassword),
+        useNick(rhs.useNick),
+        activeUser(rhs.activeUser),
+        loggedNow(rhs.loggedNow),
+        socket(rhs.socket)    {};
 
 User::~User() = default;
 
 
 const std::string &User::getNickname() const {
-    return _nickname;
+    return userNickname;
 }
 
 void User::setNickname(const std::string &nickname) {
-    _nickname = nickname;
+    userNickname = nickname;
 }
 
 const std::string &User::getUsername() const {
-    return _username;
+    return userName;
 }
 
 void User::setUsername(const std::string &username) {
-    _username = username;
+    userName = username;
 }
 
 const std::string &User::getRealName() const {
-    return _realName;
+    return actualName;
 }
 
 void User::setRealName(const std::string &realName) {
-    _realName = realName;
+    actualName = realName;
 }
 
 const std::string &User::getServerName() const {
-    return _serverName;
+    return serverName;
 }
 
 void User::setServerName(const std::string &serverName) {
-    _serverName = serverName;
+    serverName = serverName;
 }
 
 const std::string &User::getBuffer() const {
-    return _buffer;
+    return buffer;
 }
 
-void User::setBuffer(const std::string &buffer) {
-    _buffer = buffer;
+void User::setbuffer(const std::string &buffer) {
+    buffer = buffer;
 }
 
-const std::string &User::getSendBuffer() const {
-    return _sendBuffer;
+const std::string &User::getSendbuffer() const {
+    return sendDatabuffer;
 }
 
-void User::setSendBuffer(const std::string &sendBuffer) {
-    _sendBuffer = sendBuffer;
+void User::setUserSendBuffer(const std::string &sendbuffer) {
+    sendDatabuffer = sendbuffer;
 }
 
-bool User::isPassword() const {
-    return _password;
+bool User::hasPassword() const {
+    return usePassword;
 }
 
 void User::setPassword(bool password) {
-    _password = password;
+    usePassword = password;
 }
 
-bool User::isNick() const {
-    return _nick;
+bool User::hasNick() const {
+    return useNick;
 }
 
 void User::setNick(bool nick) {
-    _nick = nick;
+    useNick = nick;
 }
 
-bool User::isUser() const {
-    return _user;
+bool User::isActiveUser() const {
+    return activeUser;
 }
 
 void User::setUser(bool user) {
-    _user = user;
+    activeUser = user;
 }
 
 bool User::isLogged() const {
-    return _logged;
+    return loggedNow;
 }
 
 void User::setLogged(bool logged) {
-    _logged = logged;
+    loggedNow = logged;
 }
 
 int User::getSocket() const {
-    return _socket;
+    return socket;
 }
 
 void User::setSocket(int socket) {
-    _socket = socket;
+    socket = socket;
 }
 
-void User::clearBuffer()    {
-    _buffer.clear();
+void User::bufferClear()    {
+    buffer.clear();
 }
 
-void User::appendBuffer(const std::string &data)    {
-    _buffer += data;
+void User::bufferAppend(const std::string &data)    {
+    buffer += data;
+}
+
+bool User::hasPassworded() {
+    return false;
 }
 
 User Users::getUser(int socket)  {

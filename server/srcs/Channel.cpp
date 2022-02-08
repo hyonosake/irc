@@ -1,105 +1,84 @@
+#include <utility>
+
 #include "../includes/Channel.hpp"
+#include "../includes/IRCserver.hpp"
 
 Channel::Channel() {}
 
 Channel::~Channel() {}
 
-Channel::Channel(std::string name) : _name(name),
-                                     _limit_users(10) {}
+Channel::Channel(std::string name) :channelName(std::move(name)), userLimit(10) {}
 
-void Channel::addUser(User &new_user)
-{
-
-    if (_users.size() > this->_limit_users)
-    {
-        std::cout << "the limit of users is reached" << std::endl;
+void Channel::addUser(User &new_user)   {
+    if(usersAck.size() > userLimit)  {
+        std::cout << BLUE << "Unable to insert new user: not enough sockets availible\n" << RESET;
         return;
     }
-
-    this->_users.insert(std::make_pair(new_user.getNickname(), &new_user));
+    usersAck.insert(std::make_pair(new_user.getNickname(), &new_user));
 }
 
-void Channel::addChop(User &new_chop)
-{
-    this->_chops.push_back(new_chop);
+void Channel::addusernameVec(User &newUsernameVec) {
+    usernameVec.push_back(newUsernameVec);
 }
 
-const std::map<std::string, User *> &Channel::getUsers() const
-{
-    return this->_users;
+const std::map<std::string, User *> &Channel::getUsers() const  {
+    return usersAck;
 }
 
-const std::vector<User> &Channel::getChops() const
-{
-    return this->_chops;
+const std::vector<User> &Channel::getUsersByNicknames() const   {
+    return usernameVec;
 }
 
-const std::string &Channel::getName() const
-{
-    return this->_name;
+const std::string &Channel::getName() const {
+    return channelName;
 }
 
-const std::string &Channel::getTopic() const
-{
-    return this->_topic;
+const std::string &Channel::getTopic() const    {
+    return channelTopic;
 }
 
-bool Channel::setName(std::string name)
-{
-    _name = name;
-    return (true);
+bool Channel::setName(std::string name) {
+    channelName = std::move(name);
+    return(true);
 }
 
-void Channel::setTopic(std::string topic)
-{
-    _topic = topic;
+void Channel::setTopic(std::string topic)   {
+    channelTopic = std::move(topic);
 }
 
-bool Channel::removeUser(std::string rem_name)
-{
-    if (this->_users.erase(rem_name))
-        return (true);
-    return (false);
+bool Channel::removeUser(const std::string& removeChannelName)  {
+    if(usersAck.erase(removeChannelName))
+        return(true);
+    return(false);
 }
 
-bool Channel::removeChop(std::string nick)
-{
-    std::vector<User>::iterator us_it = this->_chops.begin();
-    for (; us_it != this->_chops.end(); us_it++)
-    {
-        if (us_it->getNickname() == nick)
-        {
-            this->_chops.erase(us_it);
+bool Channel::RemoveNicknameUsers(std::string const& nick) {
+    for(auto it = usernameVec.begin(); it != usernameVec.end(); it++)    {
+        if(it->getNickname() == nick)   {
+            usernameVec.erase(it);
             return true;
         }
     }
     return false;
 }
 
-std::vector<User>::const_iterator const Channel::getChop(std::string const &nick) const
-{
-    std::vector<User>::const_iterator us_it = this->_chops.begin();
-    for (; us_it != this->_chops.end(); us_it++)
-    {
-        if (us_it->getNickname() == nick)
-        {
-            return us_it;
+std::vector<User>::const_iterator Channel::getUsersByNickname(std::string const &nick) const  {
+    for (auto it = usernameVec.begin(); it != usernameVec.end(); it++) {
+        if(it->getNickname() == nick)   {
+            return it;
         }
     }
-    return us_it;
+    return usernameVec.end();
 }
 
-void Channel::changeTopic(std::string new_topic)
-{
-    this->_topic = new_topic;
+void Channel::changeTopic(std::string newChannelTopic)    {
+    channelTopic = std::move(newChannelTopic);
 }
 
-const std::string &Channel::getPass() const
-{
-    return this->_pass;
+const std::string &Channel::getPass() const {
+    return channelPassword;
 }
 
-void Channel::setPass(std::string pass)
-{
-    this->_pass = pass;
+void Channel::setPass(std::string pass) {
+    channelPassword = std::move(pass);
 }

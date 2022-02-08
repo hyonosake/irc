@@ -12,17 +12,17 @@ public:
     User(const User &rhs);
     ~User();
 private:
-    std::string _nickname;
-    std::string _username;
-    std::string _realName;
-    std::string _serverName;
-    std::string _buffer;
-    std::string _sendBuffer;
-    bool		_password;
-    bool		_nick;
-    bool		_user;
-    bool		_logged;
-    int			_socket;
+    std::string nickname;
+    std::string activeUsername;
+    std::string actualName;
+    std::string serverName;
+    std::string buffer;
+    std::string userSendBuffer;
+    bool		usePassword;
+    bool		useNick;
+    bool		activeUser;
+    bool		loggedNow;
+    int			socket;
 public:
     const std::string &getNickname() const;
     const std::string &getUsername() const;
@@ -33,25 +33,26 @@ public:
     void setRealName(const std::string &realName);
     void setUsername(const std::string &username);
     void setServerName(const std::string &serverName);
-    void setBuffer(const std::string &buffer);
     void setPassword(bool password);
     void setNick(bool nick);
     void setUser(bool user);
-    void setLogged(bool logged);
+    void setLoggedNow(bool logged);
     int getSocket() const;
     void setSocket(int socket);
 
-    bool isPassword() const;
-    bool isNick() const;
-    bool isUser() const;
+    bool hasPassword() const;
+    bool hasNick() const;
+    bool isActiveUser() const;
     bool isLogged() const;
 
-    void				clearBuffer		(); // TODO: rename to bufClear
-    void				appendBuffer	(const std::string &data);  // TODO: rename to bufAppend
-    const std::string	&getBuffer		() const;   // TODO: rename to getBuff
-    void				setSendBuffer	(const std::string &data);  // TODO: rename to setBuffSend
-    const std::string	&getSendBuffer	() const;   // TODO: rename to getBuffSend
+    void				bufferClear		(); // TODO: rename to bufferClear
+    void				bufferAppend	(const std::string &data);  // TODO: rename to bufferAppend
+    const std::string	&getBuffer		() const;   // TODO: rename to getBufferf
+    void                setBuffer(const std::string &buffer);
+    void				setUserSendBuffer	(const std::string &data);  // TODO: rename to setbufferfSend
+    const std::string	&getSendbuffer	() const;   // TODO: rename to getBuffSend
 
+    bool hasPassworded();
 };
 class Users {
 public:

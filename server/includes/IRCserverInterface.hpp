@@ -42,7 +42,6 @@
 # define CYAN    "\033[36m"      /* Cyan */
 # define WHITE   "\033[37m"      /* White */
 
-//void    sigintCatcher(int sig);
 
 class IRCserverInterface {
 protected:
@@ -57,14 +56,14 @@ public:
 protected:
     IRCserverInterface()    {};
     virtual ~IRCserverInterface() = 0;
-    virtual void    _stop() = 0;
-    virtual void    _accept() = 0;
-    virtual bool    _recv      ( int sockfd,       std::string &buf ) = 0;
-    virtual bool    _send      ( int sockfd, const std::string &buf ) = 0;
+    virtual void    serverShutdown() = 0;
+    virtual void    acceptConnection() = 0;
+    virtual bool    recieveData      (int socket,       std::string &buffer) = 0;
+    virtual bool    sendData      (int socket, const std::string &buffer) = 0;
     virtual void    setHostname() = 0;
     virtual const std::string & getHostname() const = 0;
     virtual void    setServerAdress() = 0;
-    virtual sockaddr_in&    getServerAdress() const = 0;
+    virtual sockaddr_in    getServerAdress() const = 0;
 };
 
 

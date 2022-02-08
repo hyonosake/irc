@@ -9,36 +9,27 @@
 #include "User.hpp"
 
 class Message {
+private:
+    Message();
+    bool							isMessagePrefix;
+    bool							isCommand;
+    bool							isColonSeparated(const std::string &str);
+    bool							isCommaSeparated(const std::string &str);
 public:
-    Message(std::string, const User& );
-    Message( const Message &rhs );
+    Message(std::string, const User&);
+    Message(const Message &rhs);
     ~Message();
-
     const std::string				&getPrefix() const;
     const std::string				&getCommand() const;
     const std::vector<std::string>	&getParamets() const;
-    void							setCommand( const std::string &command );
-
+    void							setCommand(const std::string &command);
 private:
-    std::string 			 		_prefix;
-    std::vector<std::string>		_parameters;
-    std::string 			 		_command;
-    bool							_isPrefix;
-    bool							_isCommand;
-
-private:
-    Message();
-
-
-
-    void							_parse ( std::string str, const User& );
-    void							_parseUtility ( std::vector<std::string> );
-    std::vector<std::string>		_split ( const std::string &str, char delimeter );
-
-    bool							_checkColon ( const std::string &str );
-    bool							_checkComma ( const std::string &str );
-
-    void							_printTest();
+    std::vector<std::string>		splitMessage(const std::string &str, char delimeter);
+    void							parseMessage(std::string str, const User&);
+    void							parseMessageUtility(std::vector<std::string>);
+    std::string 			 		messagePrefix;
+    std::vector<std::string>		messageParameters;
+    std::string 			 		command;
 };
 
 #endif
