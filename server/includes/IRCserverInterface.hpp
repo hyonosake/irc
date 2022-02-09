@@ -45,25 +45,25 @@
 
 class IRCserverInterface {
 protected:
-    struct sockaddr_in               _serverAdress;
-    std::string                      _hostname;
-    std::string                      _password;
-    uint32_t                          _port;
+    struct sockaddr_in               serverAddress{};
+    std::string                      serverHostname;
+    std::string                      serverPassword;
+    int                              serverPort{};
 
 public:
     IRCserverInterface(uint32_t port, std::string password);
     virtual void    start() = 0;
 protected:
-    IRCserverInterface()    {};
+    IRCserverInterface() = default;;
     virtual ~IRCserverInterface() = 0;
     virtual void    serverShutdown() = 0;
     virtual void    acceptConnection() = 0;
-    virtual bool    recieveData      (int socket,       std::string &buffer) = 0;
+    virtual bool    receiveData     (int socket, std::string &buffer) = 0;
     virtual bool    sendData      (int socket, const std::string &buffer) = 0;
     virtual void    setHostname() = 0;
-    virtual const std::string & getHostname() const = 0;
-    virtual void    setServerAdress() = 0;
-    virtual sockaddr_in    getServerAdress() const = 0;
+    virtual const std::string &getHostname() const = 0;
+    virtual void    setServerAddress() = 0;
+    virtual sockaddr_in    getServerAddress() const = 0;
 };
 
 

@@ -13,7 +13,6 @@ public:
     ~User();
 private:
     std::string nickname;
-    std::string activeUsername;
     std::string actualName;
     std::string serverName;
     std::string buffer;
@@ -36,23 +35,26 @@ public:
     void setPassword(bool password);
     void setNick(bool nick);
     void setUser(bool user);
-    void setLoggedNow(bool logged);
     int getSocket() const;
     void setSocket(int socket);
-
+    void enablePassword();
     bool hasPassword() const;
     bool hasNick() const;
     bool isActiveUser() const;
     bool isLogged() const;
 
-    void				bufferClear		(); // TODO: rename to bufferClear
-    void				bufferAppend	(const std::string &data);  // TODO: rename to bufferAppend
-    const std::string	&getBuffer		() const;   // TODO: rename to getBufferf
+    void				bufferClear(); // TODO: rename to bufferClear
+    void				bufferAppend(const std::string &data);  // TODO: rename to bufferAppend
+    const std::string	&getBuffer() const;   // TODO: rename to getBufferf
     void                setBuffer(const std::string &buffer);
-    void				setUserSendBuffer	(const std::string &data);  // TODO: rename to setbufferfSend
-    const std::string	&getSendbuffer	() const;   // TODO: rename to getBuffSend
+    void				setUserSendBuffer(const std::string &data);  // TODO: rename to setbufferfSend
+    const std::string	&getSendBuffer() const;   // TODO: rename to getBuffSend
 
     bool hasPassworded();
+
+    void enableLogged();
+    void enableNickname();
+    void enableUser();
 };
 class Users {
 public:

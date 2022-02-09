@@ -3,15 +3,16 @@
 
 #include "IRCserverInterface.hpp"
 #include "User.hpp"
+#include "Channel.hpp"
+
 class Message;
-class Channel;
 #define _DELIM "\r\n"
 #define _HOSTNAME_LEN 64
 #define _NICKNAME_LEN 64
 
 
 class IRCserver: public IRCserverInterface {
-    typedef std::unordered_multimap<std::string, User> users;      // TODO: check if it works
+    using users = std::unordered_multimap<std::string, User>;      // TODO: check if it works
     using userOperators =  std::map<std::string, User*>;
     using channels = std::map<std::string, Channel>;
 public:
@@ -27,7 +28,7 @@ private:
     channels        userChannels;
 
     void    setHostname() override;
-    void    setServerAdress() override;
+    void    setServerAddress() override;
     void    setMaxFd(int32_t maxFd);
     void    setListener(int32_t listener);
     void    setClientFds(const fd_set &clientFds);
@@ -37,40 +38,40 @@ private:
     IRCserver();
 private:
     void    serverShutdown() override;
-    void    acceptConnection();
-    bool    recieveData(int socket, std::string &buffer);
-    bool    sendData(int socket, const std::string &buffer);
+    void    acceptConnection() override;
+    bool    receiveData(int socket, std::string &buffer) override;
+    bool    sendData(int socket, const std::string &buffer) override;
     void    addUser(int socket);
     void    addUser(const User &user);
     void    deleteUser(int socket);
     void    deleteUser(const std::string &nick);
-    bool    isCorrectNickname(const std::string &nick);
+    static  bool    isCorrectNickname(const std::string &nick);
     void    sendDataToJoinedChannels(const std::string &nick,
-                                   const std::string &buffer);
-    void    sendDataToChannel(const std::string &channel, const std::string &buffer, const std::string &nick = "");
+                                   const std::string &buf);
+    void    sendDataToChannel(const std::string &channel, const std::string &buf, const std::string &nick = "");
     std::unordered_multimap<std::string, User>::iterator   getUserIter(int socket);
-    void    _execute(int socket, const std::string &buffer);
+    void    executeCommand(int socket, const std::string &buffer);
 
 
     // TODO: make naming usual
     void    privateMessageCommand(const Message &msg, const User &usr);
-    void    _CAP   (const Message &msg, const User &user);
-    void    _PASS  (const Message &msg, User &user);
-    void    _NICK  (const Message &msg, User **user);
-    void    _USER  (const Message &msg, User &user);
-    void    _PING  (const Message &msg, const User &user);
-    void    _OPER  (const Message &msg, const User &user);
-    void    _NOTICE(const Message &msg);
-    void    _JOIN  (const Message &msg, User &usr);
-    void    _PART  (const Message &msg, const User &usr);
-    void    _OPER  (const Message &msg);
-    void    _LIST  (const Message &msg, const User &user);
+    void    capCommand   (const Message &msg, const User &user);
+    void    passCommand  (const Message &msg, User &user);
+    void    nickCommand  (const Message &msg, User **user);
+    void    userCommand  (const Message &msg, User &user);
+    void    pingCommand  (const Message &msg, const User &user);
+    void    operationCommand  (const Message &msg, const User &user);
+    void    noticeCommand(const Message &msg);
+    void    joinCommand  (const Message &msg, User &usr);
+    void    partCommand  (const Message &msg, const User &usr);
+    void    operationCommand  (const Message &msg);
+    void    listCommand  (const Message &msg, const User &user);
     void    _NAMES (const Message &msg, const User &user);
-    void    quitCommad  (const Message &msg, User **user);
-    void    _KILL  (const Message &msg, User **user);
+    void    quitCommand  (const Message &msg, User **user);
+    void    killCommand  (const Message &msg, User **user);
     void    _KICK  (const Message &msg, const User &user);
-    void    _TOPIC (const Message &msg, const User &user);
-    void    _INVITE(const Message &msg, const User &user);
+    void    topicCommand (const Message &msg, const User &user);
+    void    inviteCommand(const Message &msg, const User &user);
 
 public:
     IRCserver(uint32_t port, std::string password);
@@ -79,7 +80,7 @@ public:
     int32_t getMaxFd() const;
     int32_t getListener() const;
     const std::string&    getHostname() const override;
-    sockaddr_in getServerAdress() const override;
+    sockaddr_in getServerAddress() const override;
     const fd_set &getClientFds() const;
     const std::string &getBuffer() const;
     const userOperators &getOperators() const;

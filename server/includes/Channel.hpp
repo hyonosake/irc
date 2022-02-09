@@ -28,12 +28,11 @@ public:
     Channel(std::string name);
     ~Channel();
 
-    void addUser(User &_user);
-    void addusernameVec(User &_user);
+    void addUser(User &rhs);
+    void addUsernameVec(User &_user);
     bool RemoveNicknameUsers(const std::string& nick);
     bool removeUser(const std::string& userNickname);
-    void changeTopic(std::string newchannelTopic);
-
+    void changeTopic(std::string newTopic);
     const std::string			&getName() const;
     const std::string			&getTopic() const;
     const userMap       		&getUsers() const;

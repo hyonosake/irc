@@ -17,7 +17,7 @@ void Channel::addUser(User &new_user)   {
     usersAck.insert(std::make_pair(new_user.getNickname(), &new_user));
 }
 
-void Channel::addusernameVec(User &newUsernameVec) {
+void Channel::addUsernameVec(User &newUsernameVec) {
     usernameVec.push_back(newUsernameVec);
 }
 
