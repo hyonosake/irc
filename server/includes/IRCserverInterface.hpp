@@ -51,11 +51,11 @@ protected:
     int                              serverPort{};
 
 public:
-    IRCserverInterface(uint32_t port, std::string password);
+    IRCserverInterface(int port, std::string password);
+    virtual ~IRCserverInterface() = 0;
     virtual void    start() = 0;
 protected:
     IRCserverInterface() = default;;
-    virtual ~IRCserverInterface() = 0;
     virtual void    serverShutdown() = 0;
     virtual void    acceptConnection() = 0;
     virtual bool    receiveData     (int socket, std::string &buffer) = 0;

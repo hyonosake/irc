@@ -59,7 +59,7 @@ public:
 class Users {
 public:
     std::unordered_multimap<std::string, User> users;
-    User    getUser(int socket)
+    User    getUser(int socket);
 };
 
 #endif //IRC_USER_HPP

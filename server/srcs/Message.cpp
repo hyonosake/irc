@@ -2,11 +2,11 @@
 
 Message::Message() {}
 
-Message::Message(const Message &rhs) : messagePrefix(rhs.messagePrefix),
+Message::Message(const Message &rhs) : isMessagePrefix(rhs.isMessagePrefix),
+                                       isCommand(rhs.isCommand),
+                                       messagePrefix(rhs.messagePrefix),
                                        messageParameters(rhs.messageParameters),
-                                       command(rhs.command),
-                                       isMessagePrefix(rhs.isMessagePrefix),
-                                       isCommand(rhs.isCommand)
+                                       command(rhs.command)
 {
 }
 
@@ -18,9 +18,8 @@ Message::Message(std::string str, const User &usr)
     parseMessage(str, usr);
 }
 
-void Message::setCommand(const std::string &command)
-{
-    command = command;
+void Message::setCommand(const std::string &cmd)    {
+    command = cmd;
 }
 
 const std::string &Message::getCommand() const { return command; }
@@ -123,8 +122,7 @@ void Message::parseMessageUtility(std::vector<std::string> vec_sep_space)
     }
 }
 
-void Message::_printTest()
-{
+void Message::printTest()  {
     std::cout << std::endl;
 
     std::cout << "PREFIX: " << std::endl

@@ -1,9 +1,7 @@
 #include "../includes/IRCserver.hpp"
 
 #include <utility>
-#include "../includes/User.hpp"
 #include "../includes/Message.hpp"
-#include "../includes/Channel.hpp"
 
 
 static bool exitFlag = false;   // TODO: rename
@@ -13,7 +11,7 @@ void    sigintCatcher(int sig)  {
         exitFlag = true;
 }
 
-IRCserver::IRCserver(uint32_t port, std::string passwd):
+IRCserver::IRCserver(int port, std::string passwd):
     IRCserverInterface(port, std::move(passwd))  {
     dataDelimeter = _DELIM;
     setHostname();
@@ -73,7 +71,7 @@ const std::string &IRCserver::getHostname() const {
 
 void IRCserver::setHostname() {
     char hostname[_HOSTNAME_LEN];
-    bzero((void*)(hostname), _HOSTNAME_LEN);
+    bzero(static_cast<void*>(hostname), _HOSTNAME_LEN);
     if(gethostname(hostname, _HOSTNAME_LEN) != -1)
         serverHostname = hostname;
 }
@@ -94,7 +92,7 @@ void IRCserver::initListener() {
 
     int yes = 1;
     setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
-    int b = bind(listener,(struct sockaddr *)&serverAddress, sizeof(serverAddress));
+    int b = bind(listener, (struct sockaddr *)(&serverAddress), sizeof(serverAddress));
     if (b < 0)
         throw std::invalid_argument(strerror(errno));
     int l = listen(listener, 10);
@@ -104,9 +102,6 @@ void IRCserver::initListener() {
     FD_SET(listener, &userFdSet);
     fdLimit = listener;
 };
-
-IRCserver::~IRCserver() = default;
-
 
 void IRCserver::acceptConnection()  {
     sockaddr_in temp;
@@ -270,7 +265,7 @@ void IRCserver::passCommand(const Message &msg, User &user) {
 
     if (cmd != "PASS")
         return;
-    if (user.hasPassworded())    {
+    if (user.hasPassword())    {
         buf = "462 :You may not reregister";
         sendData(user.getSocket(), buf);
         return;
@@ -297,7 +292,7 @@ void IRCserver::passCommand(const Message &msg, User &user) {
         return false;
     if (!std::isalpha(nick[0]))
         return false;
-    for (auto i = 1; i < nick.length(); ++i)  {
+    for (size_t i = 1; i < nick.length(); ++i)  {
         if (!(std::isalnum(nick[i]) || specialSymbols.find(nick[i])))
             return false;
     }
@@ -705,6 +700,8 @@ void IRCserver::topicCommand(const Message &msg, const User &user)    {
 
 // TODO: change me
 void IRCserver::_NAMES(const Message &msg, const User &user)    {
+    (void)msg;
+    (void)user;
 //    std::map<std::string, Channel>::iterator ch_it;
 //    std::string message;
 //    std::string buf;
@@ -771,7 +768,6 @@ void IRCserver::inviteCommand(const Message &msg, const User &user)   {
         sendData(user.getSocket(), buf);
         return;
     }
-    auto channelIterator = this->userChannels.begin();
     auto userInChanel = ch_it->second.getUsers().find(user.getNickname());
     if (userInChanel != ch_it->second.getUsers().end()) {
         userInChanel = ch_it->second.getUsers().find(msg.getParamets()[0]);
@@ -850,6 +846,8 @@ void IRCserver::killCommand(const Message &msg, User **user)  {
 
 // TODO: change me
 void IRCserver::_KICK(const Message &msg, const User &user) {
+    (void)msg;
+    (void)user;
 //    std::string buf;
 //    std::string cmd = msg.getCommand();
 //    std::transform(cmd.begin(), cmd.end(),cmd.begin(), ::toupper);
@@ -938,11 +936,14 @@ void IRCserver::executeCommand(int socket, const std::string &bufferExec) {
 }
 
 void IRCserver::sendDataToJoinedChannels(const std::string &nick, const std::string &buf) {
-
+    (void)nick;
+    (void)buf;
 }
 
 void IRCserver::sendDataToChannel(const std::string &channel, const std::string &buf, const std::string &nick) {
-
+    (void)nick;
+    (void)buf;
+    (void)channel;
 }
 
 bool IRCserver::receiveData(int socket, std::string &buf) {
@@ -958,7 +959,7 @@ bool IRCserver::receiveData(int socket, std::string &buf) {
     while (buf.find(dataDelimeter) == std::string::npos && user.getBuffer().size() + buf.size() < sizeof(c_buf))
     {
         memset(c_buf, 0, sizeof(c_buf));
-        bytes = recv(socket, c_buf, sizeof(c_buf) - 1 - (user.getBuffer().size() + buf.size()), MSG_PEEK);
+        bytes = int(recv(socket, c_buf, sizeof(c_buf) - 1 - (user.getBuffer().size() + buf.size()), MSG_PEEK));
         if (bytes < 0)  {
             if (errno == EAGAIN)    {
                 user.bufferAppend(buf);
@@ -976,7 +977,7 @@ bool IRCserver::receiveData(int socket, std::string &buf) {
             bytesLeft += int(dataDelimeter.length());
         while (bytesLeft > 0)   {
             bzero((void*)c_buf, sizeof(c_buf));
-            bytes = int(recv(socket, c_buf, bytesLeft, 0));
+            bytes = int(recv(socket, c_buf, static_cast<size_t>(bytesLeft), 0));
             if (bytes < 0)  {
                 if (errno == EAGAIN)    {
                     user.bufferAppend(buf);
@@ -1025,7 +1026,7 @@ bool IRCserver::sendData(int socket, const std::string &buf) {
             buf_delim += dataDelimeter;
         bytesLeft = int(buf_delim.length());
         while (bytesLeft > 0)   {
-            bytes = int(send(socket, buf_delim.c_str() + total, bytesLeft, 0));
+            bytes = int(send(socket, buf_delim.c_str() + total, static_cast<size_t>(bytesLeft), 0));
             if (bytes < 0)  {
                 if (errno == EAGAIN)    {
                     user.setUserSendBuffer(buf_delim.c_str() + total);

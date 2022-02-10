@@ -1,11 +1,11 @@
-#include "User.hpp"
+#include "../includes/User.hpp"
 
 User::User():
-        socket(-1),
-        activeUser(false),
         usePassword(false),
         useNick(false),
-        loggedNow(false)  {};
+        activeUser(false),
+        loggedNow(false),
+        socket(-1)  {};
 
 User::User(const User &rhs):
         nickname(rhs.nickname),
@@ -97,8 +97,8 @@ int User::getSocket() const {
     return socket;
 }
 
-void User::setSocket(int socket) {
-    socket = socket;
+void User::setSocket(int sock) {
+    socket = sock;
 }
 
 void User::bufferClear()    {
@@ -125,7 +125,4 @@ void User::enableNickname() {
     useNick = true;
 }
 
-User Users::getUser(int socket)  {
-
-}
 

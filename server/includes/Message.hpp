@@ -23,6 +23,7 @@ public:
     const std::string				&getCommand() const;
     const std::vector<std::string>	&getParamets() const;
     void							setCommand(const std::string &command);
+    void                            printTest();
 private:
     std::vector<std::string>		splitMessage(const std::string &str, char delimeter);
     void							parseMessage(std::string str, const User&);

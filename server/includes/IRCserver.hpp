@@ -18,9 +18,9 @@ class IRCserver: public IRCserverInterface {
 public:
     void start() override;
 private:
-    int32_t         fdLimit;
-    int32_t         listener;
-    fd_set          userFdSet;
+    int32_t         fdLimit{};
+    int32_t         listener{};
+    fd_set          userFdSet{};
     std::string     buffer;
     std::string     dataDelimeter;
     users           usersAck;
@@ -64,7 +64,6 @@ private:
     void    noticeCommand(const Message &msg);
     void    joinCommand  (const Message &msg, User &usr);
     void    partCommand  (const Message &msg, const User &usr);
-    void    operationCommand  (const Message &msg);
     void    listCommand  (const Message &msg, const User &user);
     void    _NAMES (const Message &msg, const User &user);
     void    quitCommand  (const Message &msg, User **user);
@@ -74,8 +73,8 @@ private:
     void    inviteCommand(const Message &msg, const User &user);
 
 public:
-    IRCserver(uint32_t port, std::string password);
-    ~IRCserver() override;
+    IRCserver(int port, std::string password);
+    ~IRCserver() override = default;
 
     int32_t getMaxFd() const;
     int32_t getListener() const;
