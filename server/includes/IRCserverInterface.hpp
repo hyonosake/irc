@@ -48,14 +48,14 @@ protected:
     struct sockaddr_in               serverAddress{};
     std::string                      serverHostname;
     std::string                      serverPassword;
-    int                              serverPort{};
+    int                              serverPort;
 
 public:
-    IRCserverInterface(int port, std::string password);
-    virtual ~IRCserverInterface() = 0;
+    IRCserverInterface(int port, const std::string &passwd);
+    virtual ~IRCserverInterface() = default;;
     virtual void    start() = 0;
 protected:
-    IRCserverInterface() = default;;
+    IRCserverInterface() = default;
     virtual void    serverShutdown() = 0;
     virtual void    acceptConnection() = 0;
     virtual bool    receiveData     (int socket, std::string &buffer) = 0;

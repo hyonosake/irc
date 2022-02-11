@@ -1,6 +1,5 @@
 #include "../includes/IRCserverInterface.hpp"
 
-
-IRCserverInterface::IRCserverInterface(int port, std::string password):
-    serverPassword(password),
+IRCserverInterface::IRCserverInterface(int port, const std::string &passwd):
+    serverPassword(passwd),
     serverPort(port) {}

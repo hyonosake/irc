@@ -1,7 +1,6 @@
 #include "../includes/IRCserver.hpp"
-
-#include <utility>
 #include "../includes/Message.hpp"
+#include <utility>
 
 
 static bool exitFlag = false;   // TODO: rename
@@ -11,9 +10,11 @@ void    sigintCatcher(int sig)  {
         exitFlag = true;
 }
 
-IRCserver::IRCserver(int port, std::string passwd):
-    IRCserverInterface(port, std::move(passwd))  {
-    dataDelimeter = _DELIM;
+// : IRCserverInterface(port, passwd)    {
+IRCserver::IRCserver(int port, const std::string &passwd)   {
+    serverPort = port;
+    serverPassword = passwd;
+    dataDelimeter = DELIM;
     setHostname();
     setServerAddress();
     signal(SIGPIPE, SIG_IGN);
@@ -70,9 +71,9 @@ const std::string &IRCserver::getHostname() const {
 }
 
 void IRCserver::setHostname() {
-    char hostname[_HOSTNAME_LEN];
-    bzero(static_cast<void*>(hostname), _HOSTNAME_LEN);
-    if(gethostname(hostname, _HOSTNAME_LEN) != -1)
+    char hostname[HOSTNAME_LEN];
+    bzero(static_cast<void*>(hostname), HOSTNAME_LEN);
+    if(gethostname(hostname, HOSTNAME_LEN) != -1)
         serverHostname = hostname;
 }
 
@@ -129,8 +130,8 @@ void IRCserver::addUser(const User &user)   {
 }
 
 void IRCserver::start() {
-    fd_set select_fds;
-    select_fds = userFdSet;
+
+    fd_set select_fds = userFdSet;
     std::cout << GREEN << "Server started..." << RESET << std::endl; // TODO: change message
     while (select(fdLimit + 1, &select_fds, nullptr, nullptr, nullptr) != -1)    {
         if (exitFlag)
@@ -288,7 +289,7 @@ void IRCserver::passCommand(const Message &msg, User &user) {
 
  bool IRCserver::isCorrectNickname(const std::string &nick)  {
     std::string specialSymbols = "-[]\\^\'{}";
-    if (nick.length() > _NICKNAME_LEN || nick.length() == 0)
+    if (nick.length() > NICKNAME_LEN || nick.length() == 0)
         return false;
     if (!std::isalpha(nick[0]))
         return false;
@@ -1044,3 +1045,4 @@ bool IRCserver::sendData(int socket, const std::string &buf) {
 sockaddr_in IRCserver::getServerAddress() const {
     return serverAddress;
 }
+

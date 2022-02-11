@@ -6,13 +6,13 @@
 #include "Channel.hpp"
 
 class Message;
-#define _DELIM "\r\n"
-#define _HOSTNAME_LEN 64
-#define _NICKNAME_LEN 64
+#define DELIM "\r\n"
+#define HOSTNAME_LEN 64
+#define NICKNAME_LEN 64
 
 
 class IRCserver: public IRCserverInterface {
-    using users = std::unordered_multimap<std::string, User>;      // TODO: check if it works
+    using users = std::unordered_multimap<std::string, User>;
     using userOperators =  std::map<std::string, User*>;
     using channels = std::map<std::string, Channel>;
 public:
@@ -35,7 +35,8 @@ private:
     void    setBuffer(const std::string &buffer);
     void    setOperators(const userOperators &operators);
     void initListener();
-    IRCserver();
+    IRCserver() = default;;
+
 private:
     void    serverShutdown() override;
     void    acceptConnection() override;
@@ -73,7 +74,7 @@ private:
     void    inviteCommand(const Message &msg, const User &user);
 
 public:
-    IRCserver(int port, std::string password);
+    IRCserver(int port, const std::string &passwd);
     ~IRCserver() override = default;
 
     int32_t getMaxFd() const;
